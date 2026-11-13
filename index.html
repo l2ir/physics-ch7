@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>موقع الشغل والطاقة لزيادة اللياقة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f4ef; --card:#ffffff; --ink:#1d2433; --muted:#6b7280; --line:#e6e2d8;
+  --navy:#1f3a5f; --amber:#e8a33d; --amber-soft:#fdf3e2;
+  --good:#1f8a5b; --good-soft:#e5f5ec; --bad:#c2410c; --bad-soft:#fdece4;
+  --class:#5b4bb7; --class-soft:#eeebfb; --mine:#0e7490; --mine-soft:#e0f4f7;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans Arabic","Inter",system-ui,sans-serif;-webkit-text-size-adjust:100%}
+body{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+.wrap{max-width:900px;margin:0 auto;padding:20px 16px 80px}
+header{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+h1{font-size:26px;margin:0;color:var(--navy);font-weight:700}
+.sub{color:var(--muted);font-size:14px}
+nav{position:sticky;top:0;z-index:20;background:var(--bg);padding:10px 0;display:flex;gap:8px;border-bottom:1px solid var(--line);margin-bottom:18px}
+nav button{flex:1;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:12px 6px;font:inherit;font-weight:600;font-size:15px;color:var(--ink);cursor:pointer}
+nav button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+nav .count{display:inline-block;min-width:20px;padding:0 6px;border-radius:10px;background:var(--bad);color:#fff;font-size:12px;margin-inline-start:4px}
+.view{display:none}.view.on{display:block}
+.card{scroll-margin-top:80px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.tag{display:inline-block;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;margin-bottom:10px}
+.tag.class{background:var(--class-soft);color:var(--class)}
+.tag.mine{background:var(--mine-soft);color:var(--mine)}
+.tag.trap{background:var(--bad-soft);color:var(--bad);margin-inline-start:6px}
+.card.class{border-inline-start:5px solid var(--class)}
+.card.mine{border-inline-start:5px solid var(--mine)}
+.q{direction:ltr;text-align:left;font-family:"Inter",system-ui,sans-serif;font-size:16.5px;line-height:1.6;font-weight:500}
+.q .num{color:var(--muted);font-weight:600;margin-right:6px}
+.opts{direction:ltr;display:grid;gap:8px;margin-top:12px}
+.opt{direction:ltr;text-align:left;font-family:"Inter",system-ui,sans-serif;font-size:15.5px;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:11px 14px;cursor:pointer;color:var(--ink)}
+.opt:hover{border-color:#c9c3b4}
+.opt.right{background:var(--good-soft);border-color:var(--good);color:var(--good);font-weight:600}
+.opt.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.opt[disabled]{cursor:default}
+.exp{display:none;margin-top:12px;background:var(--amber-soft);border-radius:12px;padding:12px 14px;line-height:1.8;font-size:15px}
+.exp.on{display:block}
+.eq{direction:ltr;text-align:left;font-family:"Inter",system-ui,sans-serif;background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin:8px 0;font-size:15px;font-weight:500;unicode-bidi:isolate}
+.verdict{font-weight:700}
+.verdict.ok{color:var(--good)}.verdict.no{color:var(--bad)}
+.fig{margin:12px 0;display:flex;justify-content:center}
+.fig svg{max-width:100%;height:auto;direction:ltr}
+.toolbar-row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.filter{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:7px 14px;font:inherit;font-size:14px;cursor:pointer}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.score{font-size:14px;color:var(--muted)}
+/* practice */
+.pnav{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.pnav button{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:10px 14px;font:inherit;font-weight:600;cursor:pointer}
+.pnav .where{flex:1;text-align:center;color:var(--muted);font-weight:600}
+.dots{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;direction:ltr;justify-content:center}
+.dot{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:#fff;font:600 12px "Inter",sans-serif;cursor:pointer;color:var(--ink)}
+.dot.cur{outline:2px solid var(--navy)}
+.dot.class{border-color:var(--class)}
+.dot.done-ok{background:var(--good-soft);color:var(--good)}
+.dot.done-no{background:var(--bad-soft);color:var(--bad)}
+.pad{border:1px solid var(--line);border-radius:16px;background:#fff;overflow:hidden;margin-top:14px}
+.padbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px;border-bottom:1px solid var(--line);background:#faf9f6;direction:rtl}
+.tool{border:1px solid var(--line);background:#fff;border-radius:10px;min-width:42px;height:40px;padding:0 10px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:4px;color:var(--ink)}
+.tool.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.sw{width:26px;height:26px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px var(--line);cursor:pointer}
+.sw.on{box-shadow:0 0 0 2px var(--navy)}
+.sep{width:1px;height:28px;background:var(--line);margin:0 2px}
+.padlabel{font-size:13px;color:var(--muted);margin-inline-start:auto;display:flex;align-items:center;gap:6px}
+canvas{display:block;width:100%;height:460px;touch-action:none;background:
+ repeating-linear-gradient(0deg,transparent 0 31px,#eef1f6 31px 32px)}
+.pactions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.btn{border:none;border-radius:12px;padding:12px 16px;font:inherit;font-weight:600;font-size:15px;cursor:pointer}
+.btn.main{background:var(--navy);color:#fff}
+.btn.ok{background:var(--good-soft);color:var(--good)}
+.btn.no{background:var(--bad-soft);color:var(--bad)}
+.sol{display:none;margin-top:12px;background:var(--amber-soft);border-radius:12px;padding:14px;line-height:1.85;font-size:15px}
+.sol.on{display:block}
+.sol h4{margin:0 0 6px;font-size:15px}
+/* mistakes */
+.mist h3{margin:0 0 8px;color:var(--bad);font-size:18px}
+.mist p{line-height:1.85;margin:6px 0}
+.retry{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.empty{color:var(--muted);text-align:center;padding:20px}
+.lawgrid{display:grid;gap:8px}
+.law{display:flex;flex-direction:column;gap:2px}
+.law b{font-size:14px}
+.small{font-size:13px;color:var(--muted)}
+@media (max-width:560px){h1{font-size:22px}nav button{font-size:14px;padding:10px 4px}canvas{height:380px}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" id="gdefs"></svg>
+<div class="wrap">
+<header>
+  <h1>موقع الشغل والطاقة لزيادة اللياقة</h1>
+  <div class="sub">Chapter 7: Kinetic Energy &amp; Work · FPHY011</div>
+</header>
+
+<nav>
+  <button data-v="theory" class="on">نظري</button>
+  <button data-v="practice">عملي</button>
+  <button data-v="mistakes">أخطائي <span class="count" id="mcount" hidden>0</span></button>
+  <button data-v="laws">القوانين</button>
+</nav>
+
+<section class="view on" id="v-theory">
+  <div class="toolbar-row">
+    <div class="filter" id="tfilter">
+      <button class="chip on" data-f="all">الكل</button>
+      <button class="chip" data-f="class">الزبدة</button>
+      <button class="chip" data-f="mine">تدريب إضافي</button>
+    </div>
+    <div class="score" id="tscore"></div>
+  </div>
+  <div id="tlist"></div>
+  <button class="btn main" id="treset" style="width:100%">أعيد النظري من البداية</button>
+</section>
+
+<section class="view" id="v-practice">
+  <div class="dots" id="pdots"></div>
+  <div class="pnav">
+    <button id="pprev">السابق</button>
+    <div class="where" id="pwhere"></div>
+    <button id="pnext">التالي</button>
+  </div>
+  <div id="pcard"></div>
+  <div class="pad">
+    <div class="padbar">
+      <button class="tool on" id="tPen" title="قلم">✏️ قلم</button>
+      <button class="tool" id="tEraser" title="ممحاة">🩹 ممحاة</button>
+      <span class="sep"></span>
+      <span class="sw on" data-c="#1d2433" style="background:#1d2433"></span>
+      <span class="sw" data-c="#2563eb" style="background:#2563eb"></span>
+      <span class="sw" data-c="#dc2626" style="background:#dc2626"></span>
+      <span class="sw" data-c="#16a34a" style="background:#16a34a"></span>
+      <span class="sep"></span>
+      <button class="tool" id="tSize">رفيع</button>
+      <span class="sep"></span>
+      <button class="tool" id="tUndo" title="تراجع">↶</button>
+      <button class="tool" id="tRedo" title="إعادة">↷</button>
+      <button class="tool" id="tClear">مسح الكل</button>
+      <label class="padlabel"><input type="checkbox" id="penOnly"> القلم بس (الإصبع يسكرول)</label>
+    </div>
+    <canvas id="cv"></canvas>
+  </div>
+  <div class="pactions">
+    <button class="btn main" id="showSol">اظهر الحل</button>
+    <button class="btn ok" id="markOk">حليتها صح ✓</button>
+    <button class="btn no" id="markNo">غلطت فيها ✗</button>
+  </div>
+  <div class="sol" id="psol"></div>
+</section>
+
+<section class="view" id="v-mistakes">
+  <div id="mfixed"></div>
+  <div class="card">
+    <h3 style="margin:0 0 10px">الأسئلة اللي غلطت فيها</h3>
+    <div id="mdyn"></div>
+  </div>
+</section>
+
+<section class="view" id="v-laws">
+  <div class="card"><div class="lawgrid" id="lawgrid"></div></div>
+</section>
+<div class="small" style="text-align:center;margin-top:24px">اجتهادات طلابية · أخطاؤك تنحفظ في جهازك بس</div>
+</div>
+
+<script>
+/* ---------- figures ---------- */
+const DEFS='<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#1d2433"/></marker><marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2563eb"/></marker><marker id="ahr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#dc2626"/></marker></defs>';const AR='';
+const T=(x,y,s,c,a,w)=>`<text x="${x}" y="${y}" font-family="Inter,sans-serif" font-size="${w||15}" fill="${c||'#1d2433'}" text-anchor="${a||'start'}" font-weight="600">${s}</text>`;
+const FIG={
+toolbox:`<svg viewBox="0 0 520 230" width="520">${AR}
+<line x1="40" y1="170" x2="480" y2="170" stroke="#9ca3af" stroke-width="2"/>
+<rect x="200" y="130" width="70" height="40" rx="6" fill="#fde2e2" stroke="#dc2626" stroke-width="2"/>${T(235,155,'10 kg','#1d2433','middle',13)}
+<path d="M270 140 L370 70" stroke="#2563eb" stroke-width="3" marker-end="url(#ahb)"/><line x1="270" y1="140" x2="360" y2="140" stroke="#9ca3af" stroke-dasharray="5 4"/>
+${T(325,133,'35°','#1d2433','start',13)}${T(378,68,'T = 60 N','#2563eb')}
+<path d="M200 160 L130 160" stroke="#dc2626" stroke-width="3" marker-end="url(#ahr)"/>${T(125,150,'f = 30 N','#dc2626','end')}
+<path d="M200 205 L320 205" stroke="#1d2433" stroke-width="2" marker-end="url(#ah)"/>${T(260,225,'d = 20 m','#1d2433','middle',13)}</svg>`,
+crate:`<svg viewBox="0 0 600 240" width="600">${AR}
+<line x1="40" y1="120" x2="480" y2="120" stroke="#9ca3af" stroke-width="1.5"/>${T(486,124,'x','#6b7280','start',13)}
+<line x1="420" y1="40" x2="420" y2="210" stroke="#9ca3af" stroke-width="1.5"/>${T(426,40,'y','#6b7280','start',13)}
+<rect x="330" y="80" width="60" height="40" rx="4" fill="#f5e6c8" stroke="#a16207" stroke-width="2"/>
+<rect x="120" y="80" width="60" height="40" rx="4" fill="none" stroke="#a16207" stroke-width="2" stroke-dasharray="5 4"/>
+<path d="M320 150 L190 150" stroke="#2563eb" stroke-width="3" marker-end="url(#ahb)"/>${T(255,172,'d = (−3.0 m) î','#2563eb','middle',14)}
+<path d="M360 100 L388 188" stroke="#dc2626" stroke-width="3" marker-end="url(#ahr)"/>
+${T(398,200,'F = (2.0 N) î − (6.0 N) ĵ','#dc2626','start',13)}
+${T(150,70,'end','#6b7280','middle',12)}${T(360,70,'start','#6b7280','middle',12)}</svg>`,
+powerbox:`<svg viewBox="0 0 520 220" width="520">${AR}
+<line x1="40" y1="160" x2="480" y2="160" stroke="#9ca3af" stroke-width="2"/>${T(44,185,'frictionless','#6b7280','start',12)}
+<rect x="210" y="120" width="70" height="40" rx="6" fill="#fce7f3" stroke="#be185d" stroke-width="2"/>
+<path d="M210 140 L130 140" stroke="#2563eb" stroke-width="3" marker-end="url(#ahb)"/>${T(125,132,'F1 = 2.0 N','#2563eb','end')}
+<path d="M280 120 L320 50" stroke="#dc2626" stroke-width="3" marker-end="url(#ahr)"/><line x1="280" y1="120" x2="350" y2="120" stroke="#9ca3af" stroke-dasharray="5 4"/>
+${T(305,112,'60°','#1d2433','start',13)}${T(328,48,'F2 = 4.0 N','#dc2626')}
+<path d="M360 140 L450 140" stroke="#1d2433" stroke-width="2.5" marker-end="url(#ah)"/>${T(405,132,'v = 3.0 m/s','#1d2433','middle',13)}</svg>`,
+sled:`<svg viewBox="0 0 520 230" width="520">${AR}
+<line x1="40" y1="170" x2="480" y2="170" stroke="#9ca3af" stroke-width="2"/>
+<rect x="200" y="130" width="80" height="40" rx="6" fill="#e0f4f7" stroke="#0e7490" stroke-width="2"/>${T(240,155,'20 kg','#1d2433','middle',13)}
+<path d="M280 140 L385 80" stroke="#2563eb" stroke-width="3" marker-end="url(#ahb)"/><line x1="280" y1="140" x2="370" y2="140" stroke="#9ca3af" stroke-dasharray="5 4"/>
+${T(335,133,'30°','#1d2433','start',13)}${T(392,78,'T = 40 N','#2563eb')}
+<path d="M200 160 L130 160" stroke="#dc2626" stroke-width="3" marker-end="url(#ahr)"/>${T(125,150,'f = 15 N','#dc2626','end')}
+<path d="M200 205 L330 205" stroke="#1d2433" stroke-width="2" marker-end="url(#ah)"/>${T(265,225,'d = 10 m','#1d2433','middle',13)}</svg>`,
+incline:`<svg viewBox="0 0 520 260" width="520">${AR}
+<line x1="60" y1="220" x2="460" y2="220" stroke="#9ca3af" stroke-width="2"/>
+<line x1="60" y1="220" x2="440" y2="0" stroke="#6b7280" stroke-width="2"/>
+<path d="M120 220 A60 60 0 0 0 112 190" fill="none" stroke="#1d2433" stroke-width="1.5"/>${T(128,208,'30°','#1d2433','start',13)}
+<g transform="rotate(-30 250 110)"><rect x="215" y="72" width="70" height="38" rx="6" fill="#e0f4f7" stroke="#0e7490" stroke-width="2"/></g>
+<path d="M120 112 L226 112" stroke="#dc2626" stroke-width="3" marker-end="url(#ahr)"/>${T(60,100,'F = 50 N (horizontal)','#dc2626','start',13)}
+<path d="M300 165 L400 107" stroke="#2563eb" stroke-width="3" marker-end="url(#ahb)"/>${T(410,135,'d = 4.0 m','#2563eb','start',14)}${T(410,153,'(along the ramp)','#2563eb','start',12)}</svg>`,
+phi:`<svg viewBox="0 0 520 220" width="520">${AR}
+<line x1="40" y1="190" x2="480" y2="190" stroke="#9ca3af" stroke-width="2"/>${T(470,210,'horizontal','#6b7280','end',12)}
+<path d="M120 160 L420 60" stroke="#2563eb" stroke-width="3" marker-end="url(#ahb)"/>${T(425,58,'d (حركة الجسم)','#2563eb','start',13)}
+<path d="M120 160 L400 160" stroke="#dc2626" stroke-width="3" marker-end="url(#ahr)"/>${T(405,165,'F','#dc2626','start',15)}
+<path d="M230 160 A110 110 0 0 0 224 125" fill="none" stroke="#1d2433" stroke-width="2"/>${T(240,150,'φ','#1d2433','start',17)}
+${T(260,30,'φ = angle between F and d','#1d2433','middle',15)}</svg>`
+};
+
+document.getElementById('gdefs').innerHTML=DEFS;
+/* ---------- theory data ---------- */
+const TH=[
+{id:'t1',src:'class',q:'Kinetic energy is the energy possessed by an object due to its:',o:['Motion','Position','Shape','Temperature'],a:0,e:'الطاقة الحركية تجي من <b>الحركة</b>. الجسم الواقف طاقته الحركية صفر.'},
+{id:'t2',src:'class',q:'Which of the following objects possesses kinetic energy?',o:['A pen lying on the table','A stone placed on top of a hill','A car moving on a straight road','A battery kept on to charge'],a:2,e:'الوحيد اللي <b>يتحرك</b> هو السيارة. الحجر فوق التل عنده طاقة وضع مو حركية.'},
+{id:'t3',src:'class',q:'Which statement best describes work (W) in physics?',o:['The total energy possessed by an object','The rate of change of velocity of an object','The product of mass and acceleration','Energy transferred to or from an object via a force acting on the object'],a:3,e:'الشغل = طاقة <b>تنتقل</b> للجسم أو منه عن طريق قوة. (b) هو التسارع و (c) هو القوة.'},
+{id:'t4',src:'class',trap:true,q:'In the equation W = Fd cosφ, what does the angle φ represent?',o:['The angle between force and vertical axis','The angle between force and displacement vector','The angle between two different forces acting on the object','The angle between force and horizontal axis'],a:1,e:'φ هي الزاوية بين <b>القوة والإزاحة</b> (اتجاه حركة الجسم). تطلع نفس زاوية الأفقي بس لما الجسم يمشي على أرض مستوية.',fig:'phi'},
+{id:'t5',src:'class',q:'The work-kinetic energy theorem states that the net work done on a particle is equal to:',o:['Its final kinetic energy','Its initial kinetic energy','The change in its kinetic energy','The sum of potential and kinetic energy'],a:2,e:'',eq:['W_net = ΔK = Kf − Ki']},
+{id:'t6',src:'class',q:'Power is defined as:',o:['The rate at which work is done by a force','The total amount of work done on an object','The product of force and displacement','The total change in an object’s kinetic energy'],a:0,e:'القدرة = <b>معدل</b> الشغل، يعني شغل على زمن.'},
+{id:'t7',src:'class',q:'Instantaneous power is defined as ……',o:['total work done divided by time','average work done over a long period','rate of doing work at a specific instant of time','applied force multiplied by total distance travelled'],a:2,e:'كلمة <b>instantaneous</b> = لحظة معينة. (a) هي القدرة المتوسطة.'},
+{id:'t8',src:'class',q:'A particle moves along an x axis. Its velocity changes from −3 m/s to −2 m/s. Its kinetic energy:',o:['Increases','Decreases','Remains the same','Cannot be determined'],a:1,e:'الطاقة الحركية تعتمد على <b>مقدار</b> السرعة بس. المقدار نزل من 3 إلى 2، فالطاقة تقل والشغل سالب.'},
+{id:'t9',src:'class',q:'A particle’s velocity changes from −2 m/s to 2 m/s. The work done on the particle is:',o:['Positive','Negative','Zero','Cannot be determined'],a:2,e:'المقدار 2 قبل و 2 بعد، فالطاقة الحركية ما تغيرت والشغل <b>صفر</b>.'},
+{id:'t10',src:'mine',q:'The SI unit of kinetic energy is:',o:['N','W','J','N/m'],a:2,e:'وحدة الطاقة والشغل هي <b>الجول J</b>. الـ W (واط) وحدة القدرة.'},
+{id:'t11',src:'mine',q:'Kinetic energy is:',o:['A vector in the direction of velocity','A scalar that is always ≥ 0','A scalar that can be negative','A vector that can be negative'],a:1,e:'كمية <b>قياسية</b>، والسرعة مربعة في القانون فما تطلع سالبة أبد.'},
+{id:'t12',src:'mine',q:'An object at rest has kinetic energy that is:',o:['Maximum','Negative','Equal to mg','Zero'],a:3,e:'السرعة صفر فالطاقة الحركية <b>صفر</b>.'},
+{id:'t13',src:'mine',q:'One joule (1 J) is equal to:',o:['1 kg·m²/s²','1 kg·m/s','1 kg·m/s²','1 N/m'],a:0,e:'من القانون K = ½mv²: الكتلة (kg) ضرب مربع السرعة (m²/s²).'},
+{id:'t14',src:'mine',q:'A force does zero work on a moving object when the angle between the force and the displacement is:',o:['0°','45°','90°','180°'],a:2,e:'',eq:['cos 90° = 0  →  W = 0']},
+{id:'t15',src:'mine',q:'The work done by kinetic friction on a sliding box is usually:',o:['Positive','Negative','Zero','Equal to the box’s kinetic energy'],a:1,e:'الاحتكاك <b>عكس</b> الحركة، يعني الزاوية 180 والشغل سالب.',eq:['cos 180° = −1']},
+{id:'t16',src:'mine',q:'A student pushes on a wall with a force of 200 N, but the wall does not move. The work done by the student on the wall is:',o:['200 J','−200 J','Zero','It depends on the time'],a:2,e:'ما في <b>إزاحة</b> (d = 0)، فما في شغل حتى لو تعبت.'},
+{id:'t17',src:'mine',q:'A person carries a bag while walking horizontally at constant speed. The work done by the person’s upward force on the bag is:',o:['Positive','Negative','Zero','Equal to the bag’s weight'],a:2,e:'القوة لفوق والحركة أفقية، يعني الزاوية بينهم <b>90</b> والشغل صفر.'},
+{id:'t18',src:'mine',q:'A puck slides on frictionless ice with no horizontal force acting on it. The work done on the puck is:',o:['Positive','Negative','Zero','Equal to its kinetic energy'],a:2,e:'يتحرك بالقصور الذاتي و<b>ما في قوة</b>، فما في شغل.'},
+{id:'t19',src:'mine',q:'If the net work done on an object is negative, the object’s speed:',o:['Increases','Decreases','Stays constant','Becomes zero immediately'],a:1,e:'الشغل السالب يسحب طاقة، فالطاقة الحركية تقل والسرعة <b>تقل</b>.'},
+{id:'t20',src:'mine',q:'An object moves in a straight line at constant speed. The net work done on it is:',o:['Positive','Negative','Zero','Equal to its kinetic energy'],a:2,e:'السرعة ثابتة يعني ΔK = 0، فصافي الشغل <b>صفر</b>.'},
+{id:'t21',src:'mine',q:'Which of the following quantities can never be negative?',o:['Work','Change in kinetic energy ΔK','Kinetic energy K','Power'],a:2,e:'الطاقة الحركية <b>K</b> دايم موجبة أو صفر. الشغل و ΔK والقدرة ممكن تطلع سالبة.'},
+{id:'t22',src:'mine',q:'When several forces act on a particle, the net work can be found by:',o:['Using the largest force only','Adding the work done by each force, or using the net force','Multiplying all the forces together','Using the initial kinetic energy only'],a:1,e:'طريقتين: نجمع شغل كل قوة، أو نحسب القوة المحصلة وبعدين شغلها.'},
+{id:'t23',src:'mine',q:'Which of the following is NOT a unit of work or energy?',o:['J','N·m','kg·m²/s²','W'],a:3,e:'الـ <b>W</b> (واط) وحدة <b>قدرة</b> = J/s.'},
+{id:'t24',src:'mine',q:'One watt (1 W) is equal to:',o:['1 J·s','1 N·m','1 N/s','1 J/s'],a:3,e:'القدرة = شغل ÷ زمن، فالوحدة <b>J/s</b>.'},
+{id:'t25',src:'mine',q:'The kilowatt-hour (kWh) is a unit of:',o:['Energy','Power','Force','Time'],a:0,e:'قدرة × زمن = <b>طاقة</b>. لا تنخدع بكلمة watt فيها.'},
+{id:'t26',src:'mine',q:'A block moves in uniform circular motion, held by a cord tied to the center. The power due to the cord’s force on the block is:',o:['Positive','Negative','Zero','Equal to mv²'],a:2,e:'قوة الحبل للمركز والسرعة مماسية، يعني الزاوية <b>90</b> والقدرة صفر.',eq:['P = Fv cos 90° = 0']},
+{id:'t27',src:'mine',trap:true,q:'A box is pushed up a ramp inclined at 30° above the horizontal by a HORIZONTAL force. In W = Fd cosφ, the angle φ is:',o:['0°','30°','60°','90°'],a:1,e:'الإزاحة على <b>المنحدر</b> (30° عن الأفقي) والقوة أفقية، فالزاوية بينهم <b>30°</b>. الصفر هي الزاوية مع الأفقي وهذا الفخ.',fig:'incline'}
+];
+
+/* ---------- practice data ---------- */
+const PR=[
+{id:'p1',src:'class',q:'Which of the following bodies has the largest kinetic energy?',o:['Mass 3m and speed v','Mass 3m and speed 2v','Mass 2m and speed 3v','Mass m and speed 4v'],a:2,
+ s:['نحسب m × v² لكل خيار:','eq:a) 3 × 1 = 3','eq:b) 3 × 4 = 12','eq:c) 2 × 9 = 18   ← الأكبر','eq:d) 1 × 16 = 16','السرعة مربعة، فتأثيرها أكبر من الكتلة.']},
+{id:'p2',src:'class',q:'If the speed of a body is tripled, by what factor does the kinetic energy change?',o:['Decreases by a factor of 3','Increases by a factor of 3','Decreases by a factor of 9','Increases by a factor of 9'],a:3,
+ s:['K يتناسب مع v²:','eq:3² = 9','فالطاقة <b>تزيد 9 مرات</b>.']},
+{id:'p3',src:'class',trap:true,q:'If the mass of an object is 15 kg and its kinetic energy is 500 J, what is its speed?',o:['4.92 m/s','5.77 m/s','6.08 m/s','8.16 m/s'],a:3,
+ s:['eq:K = ½ m v²  →  v² = 2K / m','eq:v² = 2 × 500 / 15 = 66.7','⚠️ هذا <b>v²</b> مو v، لازم الجذر:','eq:v = √66.7 = 8.16 m/s']},
+{id:'p4',src:'class',q:'Two objects A and B have the same mass, but object A has twice the kinetic energy of object B. What is the ratio of their speeds (vA/vB)?',o:['√2 : 1','1 : 2','2 : 1','4 : 1'],a:0,
+ s:['نفس الكتلة، فـ K يتناسب مع v²:','eq:vA² / vB² = 2  →  vA / vB = √2','الجواب <b>√2 : 1</b>، مو 2 : 1.']},
+{id:'p5',src:'class',q:'The speed of a car increases from 5.0 m/s to 15.0 m/s. What is the ratio Kf/Ki?',o:['3 : 1','6 : 1','9 : 1','12 : 1'],a:2,
+ s:['eq:Kf / Ki = (vf / vi)² = (15 / 5)² = 3² = 9']},
+{id:'p6',src:'class',q:'A rope making an angle 35° drags a 10 kg toolbox a horizontal distance of 20 m. The tension in the rope is 60 N and the constant friction force is 30 N. Find: (a) the work done by the rope (b) the work done by the friction force',fig:'toolbox',
+ s:['<b>(a)</b> الحبل بزاوية 35° مع اتجاه الحركة:','eq:W = 60 × 20 × cos35° = 983 J','<b>(b)</b> الاحتكاك عكس الحركة (180°):','eq:W = 30 × 20 × cos180° = −600 J']},
+{id:'p7',src:'class',trap:true,q:'A net force does 150 J of work on a 3 kg object initially at rest. What is the final speed of the object?',o:['10 m/s','50 m/s','5 m/s','100 m/s'],a:0,
+ s:['بدأ من السكون فـ Ki = 0:','eq:Kf = Ki + W = 0 + 150 = 150 J','eq:v² = 2 × 150 / 3 = 100','eq:v = √100 = 10 m/s','لو نسيت الجذر بيطلع 100 وهو فخ.']},
+{id:'p8',src:'class',q:'A crate slides across a parking lot through a displacement d = (−3.0 m)î while a steady wind pushes against it with a force F = (2.0 N)î + (−6.0 N)ĵ. (a) How much work does this force do on the crate? (b) If the crate has a kinetic energy of 10 J at the beginning, what is its kinetic energy at the end?',fig:'crate',
+ s:['<b>(a)</b> ضرب نقطي: x مع x و y مع y:','eq:W = (2.0)(−3.0) + (−6.0)(0) = −6.0 J','الإزاحة ما لها مركبة y، فالـ −6.0 ما يسوي شغل.','<b>(b)</b>','eq:Kf = Ki + W = 10 + (−6) = 4.0 J']},
+{id:'p9',src:'class',q:'Constant forces F1 and F2 act on a box as it slides rightward across a frictionless floor. F1 is horizontal (pointing left) with magnitude 2.0 N; F2 is angled upward by 60° to the floor with magnitude 4.0 N. The speed of the box at a certain instant is 3.0 m/s. What is the power due to each force, and the net power? Is the net power changing?',fig:'powerbox',
+ s:['F1 عكس الحركة (180°):','eq:P1 = 2.0 × 3.0 × cos180° = −6.0 W','F2 بزاوية 60° مع الحركة:','eq:P2 = 4.0 × 3.0 × cos60° = +6.0 W','eq:P_net = −6.0 + 6.0 = 0','صافي القدرة صفر، يعني السرعة ثابتة، فالقدرة <b>ما تتغير</b>.']},
+{id:'p10',src:'mine',q:'An object of mass 4 kg moves with a speed of 5 m/s. Its kinetic energy is:',o:['10 J','20 J','50 J','100 J'],a:2,
+ s:['eq:K = ½ × 4 × 5² = ½ × 4 × 25 = 50 J']},
+{id:'p11',src:'mine',trap:true,q:'An object of mass 4 kg has a kinetic energy of 72 J. What is its speed?',o:['3 m/s','6 m/s','18 m/s','36 m/s'],a:1,
+ s:['eq:v² = 2 × 72 / 4 = 36','eq:v = √36 = 6 m/s','الـ 36 فخ: هذا v² مو v.']},
+{id:'p12',src:'mine',q:'A force F = (3 N)î + (4 N)ĵ acts on a particle that moves through a displacement d = (2 m)î − (1 m)ĵ. The work done by the force is:',o:['2 J','10 J','6 J','−2 J'],a:0,
+ s:['eq:W = (3)(2) + (4)(−1) = 6 − 4 = 2 J']},
+{id:'p13',src:'mine',q:'A rope at 30° above the horizontal pulls a 20 kg sled 10 m across the snow. The tension is 40 N and a friction force of 15 N acts on the sled. Find: (a) the work done by the rope (b) the work done by friction (c) the net work (d) the final speed if the sled starts from rest.',fig:'sled',
+ s:['eq:(a) W_T = 40 × 10 × cos30° = 346 J','eq:(b) W_f = 15 × 10 × cos180° = −150 J','الجاذبية والقوة العمودية شغلهم صفر (90°).','eq:(c) W_net = 346 − 150 = 196 J','eq:(d) v² = 2 × 196 / 20 = 19.6','eq:v = √19.6 = 4.43 m/s']},
+{id:'p14',src:'mine',trap:true,q:'A horizontal force of 50 N pushes a box 4.0 m up a frictionless ramp inclined at 30° above the horizontal. How much work does the force do on the box?',o:['200 J','173 J','100 J','0 J'],a:1,fig:'incline',
+ s:['الإزاحة على المنحدر (30°) والقوة أفقية، فـ <b>φ = 30°</b>:','eq:W = 50 × 4.0 × cos30° = 173 J','لو حطيت φ = 0 (زاوية الأفقي) بيطلع 200 J وهو الفخ.']},
+{id:'p15',src:'mine',q:'A 2 kg ball’s kinetic energy increases from 9 J to 25 J. Find (a) its initial speed (b) its final speed (c) the net work done on it.',
+ s:['eq:(a) vi² = 2 × 9 / 2 = 9  →  vi = 3 m/s','eq:(b) vf² = 2 × 25 / 2 = 25  →  vf = 5 m/s','eq:(c) W = Kf − Ki = 25 − 9 = 16 J']},
+{id:'p16',src:'mine',q:'A motor does 600 J of work in 20 s. Its average power is:',o:['30 W','12000 W','0.033 W','620 W'],a:0,
+ s:['eq:P_avg = W / Δt = 600 / 20 = 30 W']},
+{id:'p17',src:'mine',q:'A force F = (2 N)î − (3 N)ĵ acts on an object whose velocity is v = (4 m/s)î + (1 m/s)ĵ. The power due to this force is:',o:['5 W','11 W','−5 W','8 W'],a:0,
+ s:['eq:P = F · v = (2)(4) + (−3)(1) = 8 − 3 = 5 W']},
+{id:'p18',src:'mine',q:'A 1500 kg car moving at 20 m/s brakes to a stop over 50 m. Find (a) the work done by the brakes (b) the magnitude of the braking force.',
+ s:['eq:(a) W = Kf − Ki = 0 − ½(1500)(20)² = −3.0 × 10⁵ J','eq:(b) F = |W| / d = 3.0 × 10⁵ / 50 = 6000 N']}
+];
+
+/* ---------- storage ---------- */
+const KEY='ch7-site-v1';
+let st={wrong:{},tAns:{},pMark:{}};
+try{const s=JSON.parse(localStorage.getItem(KEY));if(s)st=Object.assign(st,s);}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}};
+const L='abcd';
+const tagHTML=x=>`<span class="tag ${x.src}">${x.src==='class'?'الزبدة':'تدريب إضافي'}</span>${x.trap?'<span class="tag trap">فخ</span>':''}`;
+const eqs=a=>(a||[]).map(t=>`<div class="eq">${t}</div>`).join('');
+
+/* ---------- theory ---------- */
+let tf='all';
+function renderTheory(){
+  const box=document.getElementById('tlist');box.innerHTML='';
+  TH.forEach((x,i)=>{
+    if(tf!=='all'&&x.src!==tf)return;
+    const c=document.createElement('div');c.className='card '+x.src;c.id='q-'+x.id;
+    c.innerHTML=tagHTML(x)+`<div class="q"><span class="num">${i+1}.</span>${x.q}</div>`+(x.fig&&false?'':'')+
+      `<div class="opts">${x.o.map((o,j)=>`<button class="opt" data-j="${j}">${L[j]}) ${o}</button>`).join('')}</div><div class="exp"></div>`;
+    const ans=st.tAns[x.id];
+    c.querySelectorAll('.opt').forEach(b=>b.onclick=()=>answerT(x,c,+b.dataset.j));
+    box.appendChild(c);
+    if(ans!==undefined)showT(x,c,ans);
+  });
+  score();
+}
+function answerT(x,c,j){st.tAns[x.id]=j;if(j!==x.a)st.wrong[x.id]=1;save();showT(x,c,j);score();renderMist();}
+function showT(x,c,j){
+  c.querySelectorAll('.opt').forEach(b=>{const k=+b.dataset.j;b.disabled=true;if(k===x.a)b.classList.add('right');else if(k===j)b.classList.add('wrong');});
+  const ok=j===x.a;const ex=c.querySelector('.exp');
+  ex.innerHTML=`<span class="verdict ${ok?'ok':'no'}">${ok?'صح ✓':'غلط ✗ — الجواب ('+L[x.a]+')'}</span><br>${x.e||''}${eqs(x.eq)}${x.fig?`<div class="fig">${FIG[x.fig]}</div>`:''}`;
+  ex.classList.add('on');
+}
+function score(){const ids=TH.filter(x=>tf==='all'||x.src===tf);let d=0,r=0;ids.forEach(x=>{if(st.tAns[x.id]!==undefined){d++;if(st.tAns[x.id]===x.a)r++;}});
+  document.getElementById('tscore').textContent=`حليت ${d} من ${ids.length} · صح ${r}`;}
+document.querySelectorAll('#tfilter .chip').forEach(b=>b.onclick=()=>{document.querySelectorAll('#tfilter .chip').forEach(z=>z.classList.remove('on'));b.classList.add('on');tf=b.dataset.f;renderTheory();});
+document.getElementById('treset').onclick=()=>{st.tAns={};save();renderTheory();window.scrollTo(0,0);};
+
+/* ---------- practice ---------- */
+let pi=0;const strokes={},redo={};
+function renderDots(){
+  const d=document.getElementById('pdots');d.innerHTML='';
+  PR.forEach((x,i)=>{const b=document.createElement('button');b.className='dot '+x.src+(i===pi?' cur':'')+(st.pMark[x.id]==='ok'?' done-ok':st.pMark[x.id]==='no'?' done-no':'');b.textContent=i+1;b.onclick=()=>goP(i);d.appendChild(b);});
+}
+function goP(i){pi=Math.max(0,Math.min(PR.length-1,i));renderP();redraw();}
+function solHTML(x){return '<h4>الحل</h4>'+x.s.map(t=>t.startsWith('eq:')?`<div class="eq">${t.slice(3)}</div>`:`<div>${t}</div>`).join('')+(x.fig?`<div class="fig">${FIG[x.fig]}</div>`:'');}
+function renderP(){
+  const x=PR[pi];
+  document.getElementById('pwhere').textContent=`سؤال ${pi+1} من ${PR.length}`;
+  const c=document.getElementById('pcard');
+  c.innerHTML=`<div class="card ${x.src}" style="margin-bottom:0">${tagHTML(x)}<div class="q"><span class="num">${pi+1}.</span>${x.q}</div>${x.fig?`<div class="fig">${FIG[x.fig]}</div>`:''}${x.o?`<div class="opts">${x.o.map((o,j)=>`<button class="opt" data-j="${j}">${L[j]}) ${o}</button>`).join('')}</div>`:''}</div>`;
+  if(x.o)c.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const j=+b.dataset.j;c.querySelectorAll('.opt').forEach(z=>{const k=+z.dataset.j;z.disabled=true;if(k===x.a)z.classList.add('right');else if(k===j)z.classList.add('wrong');});
+    st.pMark[x.id]=j===x.a?'ok':'no';if(j!==x.a)st.wrong[x.id]=1;save();renderDots();renderMist();showSol();});
+  const s=document.getElementById('psol');s.classList.remove('on');s.innerHTML=solHTML(x);
+  renderDots();
+}
+function showSol(){document.getElementById('psol').classList.add('on');}
+document.getElementById('showSol').onclick=()=>{showSol();document.getElementById('psol').scrollIntoView({behavior:'smooth',block:'nearest'});};
+document.getElementById('markOk').onclick=()=>{const x=PR[pi];st.pMark[x.id]='ok';save();renderDots();};
+document.getElementById('markNo').onclick=()=>{const x=PR[pi];st.pMark[x.id]='no';st.wrong[x.id]=1;save();renderDots();renderMist();};
+document.getElementById('pprev').onclick=()=>goP(pi-1);
+document.getElementById('pnext').onclick=()=>goP(pi+1);
+
+/* ---------- scratch pad ---------- */
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+let tool='pen',color='#1d2433',thin=true,cur=null;
+const qid=()=>PR[pi].id;
+function sizeCanvas(){const r=cv.getBoundingClientRect(),dpr=window.devicePixelRatio||1;cv.width=Math.round(r.width*dpr);cv.height=Math.round(r.height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);redraw();}
+function drawStroke(s){
+  if(!s.p.length)return;
+  ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
+  ctx.globalCompositeOperation=s.t==='eraser'?'destination-out':'source-over';
+  ctx.strokeStyle=s.c;ctx.lineWidth=s.w;ctx.beginPath();
+  const p=s.p;ctx.moveTo(p[0][0],p[0][1]);
+  if(p.length===1)ctx.lineTo(p[0][0]+0.1,p[0][1]);
+  for(let i=1;i<p.length-1;i++){const mx=(p[i][0]+p[i+1][0])/2,my=(p[i][1]+p[i+1][1])/2;ctx.quadraticCurveTo(p[i][0],p[i][1],mx,my);}
+  if(p.length>1)ctx.lineTo(p[p.length-1][0],p[p.length-1][1]);
+  ctx.stroke();ctx.restore();
+}
+function redraw(){const r=cv.getBoundingClientRect();ctx.clearRect(0,0,r.width,r.height);(strokes[qid()]||[]).forEach(drawStroke);}
+function pos(e){const r=cv.getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top];}
+const penOnly=document.getElementById('penOnly');
+cv.style.touchAction='none';
+penOnly.onchange=()=>{cv.style.touchAction=penOnly.checked?'pan-y':'none';};
+cv.addEventListener('pointerdown',e=>{
+  if(penOnly.checked&&e.pointerType==='touch')return;
+  e.preventDefault();cv.setPointerCapture(e.pointerId);
+  const w=tool==='eraser'?(thin?18:34):(thin?2.2:4.5);
+  cur={t:tool,c:color,w,p:[pos(e)]};(strokes[qid()]=strokes[qid()]||[]).push(cur);redo[qid()]=[];drawStroke(cur);
+});
+cv.addEventListener('pointermove',e=>{if(!cur)return;e.preventDefault();
+  const ev=e.getCoalescedEvents?e.getCoalescedEvents():[e];ev.forEach(k=>cur.p.push(pos(k)));redraw();});
+const end=()=>{cur=null;};
+cv.addEventListener('pointerup',end);cv.addEventListener('pointercancel',end);cv.addEventListener('pointerleave',end);
+const setTool=t=>{tool=t;document.getElementById('tPen').classList.toggle('on',t==='pen');document.getElementById('tEraser').classList.toggle('on',t==='eraser');};
+document.getElementById('tPen').onclick=()=>setTool('pen');
+document.getElementById('tEraser').onclick=()=>setTool('eraser');
+document.querySelectorAll('.sw').forEach(s=>s.onclick=()=>{color=s.dataset.c;document.querySelectorAll('.sw').forEach(z=>z.classList.remove('on'));s.classList.add('on');setTool('pen');});
+document.getElementById('tSize').onclick=e=>{thin=!thin;e.target.textContent=thin?'رفيع':'عريض';};
+document.getElementById('tUndo').onclick=()=>{const a=strokes[qid()];if(a&&a.length){(redo[qid()]=redo[qid()]||[]).push(a.pop());redraw();}};
+document.getElementById('tRedo').onclick=()=>{const r=redo[qid()];if(r&&r.length){(strokes[qid()]=strokes[qid()]||[]).push(r.pop());redraw();}};
+let clearArmed=false;
+document.getElementById('tClear').onclick=e=>{
+  if(!clearArmed){clearArmed=true;e.target.textContent='متأكد؟';setTimeout(()=>{clearArmed=false;e.target.textContent='مسح الكل';},2500);return;}
+  const a=strokes[qid()]||[];if(a.length){redo[qid()]=[...a].reverse();strokes[qid()]=[];redraw();}
+  clearArmed=false;e.target.textContent='مسح الكل';
+};
+window.addEventListener('resize',sizeCanvas);
+
+/* ---------- mistakes ---------- */
+const FIXED=[
+{h:'١) نسيان الجذر لما نطلع السرعة',p:['القانون فيه <b>v²</b>، فلما تقسمين 2K على m يطلع لك v² مو v. لازم آخر خطوة ناخذ الجذر.'],eq:['K = 500 J, m = 15 kg','v² = 2 × 500 / 15 = 66.7    ← هنا يوقف كثير من الطلاب','v = √66.7 = 8.16 m/s    ← الجواب الصح'],tip:'قاعدة: إذا السؤال يطلب السرعة من الطاقة، آخر خطوة دايم √.',retry:[['p3','عملي 3'],['p7','عملي 7'],['p11','عملي 11'],['p15','عملي 15']]},
+{h:'٢) زاوية φ في W = Fd cosφ',p:['φ هي الزاوية بين <b>القوة</b> و<b>الإزاحة</b> (اتجاه حركة الجسم)، مو بين القوة والأفقي.','في أغلب المسائل الجسم يمشي على أرض مستوية فتطلع نفس الشي، بس على المنحدر تختلف.'],fig:'phi',tip:'قاعدة: قِس الزاوية بين سهم القوة وسهم الحركة.',retry:[['t4','نظري 4'],['t27','نظري 27'],['p14','عملي 14']]}
+];
+function jump(id){
+  const ti=TH.findIndex(x=>x.id===id);
+  if(ti>=0){tf='all';document.querySelectorAll('#tfilter .chip').forEach(z=>z.classList.toggle('on',z.dataset.f==='all'));delete st.tAns[id];save();show('theory');renderTheory();setTimeout(()=>document.getElementById('q-'+id).scrollIntoView({behavior:'smooth',block:'center'}),50);return;}
+  const pj=PR.findIndex(x=>x.id===id);if(pj>=0){show('practice');goP(pj);window.scrollTo({top:0,behavior:'smooth'});}
+}
+function renderMist(){
+  document.getElementById('mfixed').innerHTML=FIXED.map(m=>`<div class="card mist"><h3>${m.h}</h3>${m.p.map(t=>`<p>${t}</p>`).join('')}${eqs(m.eq)}${m.fig?`<div class="fig">${FIG[m.fig]}</div>`:''}<p><b>${m.tip}</b></p><div class="small">جرّب أسئلة مشابهة:</div><div class="retry">${m.retry.map(r=>`<button class="chip" data-go="${r[0]}">${r[1]}</button>`).join('')}</div></div>`).join('');
+  const ids=Object.keys(st.wrong);const d=document.getElementById('mdyn');
+  if(!ids.length)d.innerHTML='<div class="empty">ما في أخطاء للحين. أي سؤال تغلط فيه بينزل هنا تلقائي.</div>';
+  else d.innerHTML=ids.map(id=>{const x=TH.find(z=>z.id===id)||PR.find(z=>z.id===id);if(!x)return'';const kind=id[0]==='t'?'نظري':'عملي';const n=(id[0]==='t'?TH:PR).indexOf(x)+1;
+    return `<div class="card ${x.src}" style="margin-bottom:10px">${tagHTML(x)}<div class="small">${kind} ${n}</div><div class="q" style="font-size:15px">${x.q}</div><div class="retry"><button class="chip" data-go="${id}">أعيد حله</button><button class="chip" data-rm="${id}">فهمته، شيله</button></div></div>`;}).join('');
+  document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>jump(b.dataset.go));
+  document.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{delete st.wrong[b.dataset.rm];save();renderMist();});
+  const mc=document.getElementById('mcount');mc.hidden=!ids.length;mc.textContent=ids.length;
+}
+
+/* ---------- laws ---------- */
+const LAWS=[['الطاقة الحركية','K = ½ m v²   (J)'],['السرعة من الطاقة','v = √(2K / m)'],['الشغل بقوة ثابتة','W = F d cosφ'],['الشغل بالمتجهات','W = F · d = Fx dx + Fy dy'],['نظرية الشغل والطاقة','W_net = ΔK = Kf − Ki'],['القدرة المتوسطة','P_avg = W / Δt   (W = J/s)'],['القدرة اللحظية','P = F v cosφ = F · v'],['إشارة الشغل','φ < 90° → موجب   ·   φ = 90° → صفر   ·   φ > 90° → سالب'],['النسب','K₂ / K₁ = (v₂ / v₁)²   (نفس الكتلة)']];
+document.getElementById('lawgrid').innerHTML=LAWS.map(l=>`<div class="law"><b>${l[0]}</b><div class="eq">${l[1]}</div></div>`).join('')+`<div class="fig">${FIG.phi}</div>`;
+
+/* ---------- views ---------- */
+const VIEWS=['theory','practice','mistakes','laws'];
+function show(v){if(!VIEWS.includes(v))v='theory';
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+  VIEWS.forEach(k=>document.getElementById('v-'+k).classList.toggle('on',k===v));
+  if(location.hash!=='#'+v)history.replaceState(null,'','#'+v);
+  if(v==='practice')requestAnimationFrame(sizeCanvas);
+}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+window.addEventListener('hashchange',()=>show(location.hash.slice(1)));
+renderTheory();renderP();renderMist();show(location.hash.slice(1)||'theory');
+</script>
+</body>
+</html>
